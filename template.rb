@@ -1,68 +1,74 @@
-remove_file "Gemfile"
-create_file "Gemfile" do
-<<-RUBY
-source "http://rubygems.org"
+# Inspire by the article: https://medium.com/@josisusan/rails-template-9d804bf47fab
+# And by : https://github.com/infinum/default_rails_template/blob/master/template.rb
+# And by : https://github.com/dao42/rails-template/blob/master/composer.rb
+# And by : https://github.com/excid3/jumpstart/blob/master/template.rb
 
-
-ruby '2.6.2'
-
-# Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.4.2', require: false
-# Flexible authentication solution for Rails with Warden
-gem 'devise', '~> 4.7', '>= 4.7.1'
-# HTML Abstraction Markup Language
-gem 'haml', '~> 5.1', '>= 5.1.2'
-# Build JSON APIs with ease.
-gem 'jbuilder', '~> 2.7'
-# Use Puma as the app server
-gem 'puma', '~> 4.1'
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
-# Use SCSS for stylesheets
-gem 'sass-rails', '>= 6'
-# Turbolinks makes navigating your web application faster.
-gem 'turbolinks', '~> 5'
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
-# Transpile app-like JavaScript.
-gem 'webpacker', '~> 4.0'
-
-group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'byebug', platforms: %i[mri mingw x64_mingw]
+# Dir Source for the 3 basic Files
+def source_paths
+  [__dir__]
 end
 
-group :development do
-  # Guard and LiveReload automatically reloads your browser when 'view' files are modified.
-  gem 'guard'
-  gem 'guard-livereload', '~> 2.5', require: false
-  # Listens to file modifications and notifies you about the changes.
-  gem 'listen', '>= 3.0.5', '< 3.2'
-  # A simple, fast Mysql library for Ruby, binding to libmysql.
-  gem 'mysql2', '~> 0.5.3'
-  # Automatic Ruby code style checking tool.
-  gem 'rubocop', '~> 0.82.0', require: false
-  gem 'rubocop-performance', require: false
-  # Spring speeds up development by keeping your application running in the background.
-  gem 'spring'
-  gem 'spring-watcher-listen', '~> 2.0.0'
-  # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
-  gem 'web-console', '>= 3.3.0'
-end
+# Grabbing the big files
+remove_file 'Gemfile'
+copy_file 'Gemfile', 'Gemfile'
+remove_file '.gitignore'
+copy_file '.gitignore', '.gitignore'
+copy_file '.rubocop.yml', '.rubocop.yml'
 
-group :test do
-  # An integration testing tool for rack based web applications.
-  gem 'capybara', '>= 2.15'
-  # Ensureing a clean slate of databases for testing.
-  gem 'database_cleaner'
-  # A tool for writing automated tests of websites.
-  gem 'selenium-webdriver'
-  # A testing framework for Rails 5+.
-  gem 'rspec-rails', '~> 4.0'
-  # Use sqlite3 as the database for testing.
-  gem 'sqlite3', '~> 1.4'
-  # Easy installation and use of web drivers to run system tests with browsers.
-  gem 'webdrivers'
+SECRETS_RB_FILE = <<-HEREDOC.strip_heredoc
+  ENV['DATABASE_USERNAME'] = ''
+  ENV['DATABASE_PASSWORD'] = ''
+  ENV['SOCKET'] = '/var/run/mysqld/mysqld.sock'
+HEREDOC
+create_file 'config/secrets.rb', SECRETS_RB_FILE, force: true
+
+# My Database YML FILE
+DB_CONFIG = <<-HEREDOC.strip_heredoc
+  development:
+    adapter: mysql2
+    encoding: utf8
+    pool: 5
+    host: localhost
+    database: #{app_name}_development
+    username: <%= ENV['DATABASE_USERNAME'] %> 
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    socket: <%= ENV['SOCKET'] %>
+  test:
+    adapter: sqlite3
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+    timeout: 5000
+    database: db/#{app_name}_test.sqlite3  
+HEREDOC
+create_file 'config/database.yml', DB_CONFIG, force: true
+
+def add_javascript
+  run 'yarn add expose-loader jquery popper.js bootstrap data-confirm-modal local-time'
+
+  content = <<-JS
+  const webpack = require('webpack')
+  environment.plugins.append('Provide', new webpack.ProvidePlugin({
+    $: 'jquery',
+    jQuery: 'jquery',
+    Rails: '@rails/ujs'
+  }))
+  JS
+  insert_into_file 'config/webpack/environment.js', content + "\n", before: 'module.exports = environment'
 end
-RUBY
+after_bundle do
+  # Applying styling frameworks Jquery/bootstrap
+  add_javascript
+
+  # Initial config of RSpec
+  generate 'rspec:install'
+
+  # Fix default rubocop errors
+  run 'bundle exec rubocop -a'
+
+  # Commit everything to git
+  git :init
+  git add: '.'
+  git commit: %Q(-m "Initial commit")
+
+  say
+  say 'Applicacion creada con éxito!', :blue
 end
