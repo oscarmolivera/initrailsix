@@ -10,30 +10,40 @@ ruby '2.6.2'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
-# Reduces boot times through caching; required in config/boot.rb
+# Reduces boot times through caching; required in config/boot.rb.
 gem 'bootsnap', '>= 1.4.2', require: false
-# Flexible authentication solution for Rails with Warden
+# Flexible authentication solution for Rails with Warden.
 gem 'devise', '~> 4.7', '>= 4.7.1'
-# HTML Abstraction Markup Language
+# Bootstrap views for Devise with I18n support.
+gem 'devise-bootstrap-views', '~> 1.0'
+# Slugging and permalink plugins for Active Record.
+gem 'friendly_id', '~> 5.3'
+# HTML Abstraction Markup Language.
 gem 'haml', '~> 5.1', '>= 5.1.2'
+## High-level wrapper for processing images for the web with ImageMagick or libvips.
+## gem 'image_processing', '~> 1.10', '>= 1.10.3'
 # Build JSON APIs with ease.
 gem 'jbuilder', '~> 2.7'
-# Use Puma as the app server
+# Use Puma as the app server.
 gem 'puma', '~> 4.1'
-# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'.
 gem 'rails', '~> 6.0.2', '>= 6.0.2.2'
-# Use SCSS for stylesheets
+# Use SCSS for stylesheets.
 gem 'sass-rails', '>= 6'
 # Turbolinks makes navigating your web application faster.
 gem 'turbolinks', '~> 5'
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
+# Windows does not include zoneinfo files, so bundle the tzinfo-data gem.
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 # Transpile app-like JavaScript.
 gem 'webpacker', '~> 4.0'
+# Simple API for performing paginated queries with Active Record, DataMapper and Sequel.
+gem 'will_paginate', '~> 3.3'
 
 group :development, :test do
-  # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  # Call 'byebug' anywhere in the code to stop execution and get a debugger console.
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
+  # Easily generate fake data: names, addresses, phone numbers, etc.
+  gem 'faker', '~> 2.11'
 end
 
 group :development do
