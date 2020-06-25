@@ -3,6 +3,8 @@
 # And by : https://github.com/dao42/rails-template/blob/master/composer.rb
 # And by : https://github.com/excid3/jumpstart/blob/master/template.rb
 
+require 'io/console'
+
 # Dir Source for the 3 basic Files
 def source_paths
   [__dir__]
@@ -11,10 +13,11 @@ end
 # Start with my own Gemfile
 remove_file 'Gemfile'
 copy_file 'Gemfile', 'Gemfile'
-
+db_user = IO::console.getpass '** Ingrese el usuario admin de su base de datos: '
+db_password = IO::console.getpass ' ** Ingrese contraseña del usuario : '
 SECRETS_RB_FILE = <<-HEREDOC.strip_heredoc
-  ENV['DATABASE_USERNAME'] = ''
-  ENV['DATABASE_PASSWORD'] = ''
+  ENV['DATABASE_USERNAME'] = "#{db_user}"
+  ENV['DATABASE_PASSWORD'] = "#{db_password}"
   ENV['SOCKET'] = '/var/run/mysqld/mysqld.sock'
 HEREDOC
 create_file 'config/secrets.rb', SECRETS_RB_FILE, force: true
@@ -42,6 +45,7 @@ BOOTSTRAP_CONFIG = <<-HEREDOC.strip_heredoc
     @import '~bootstrap/scss/bootstrap';
 HEREDOC
 create_file 'app/javascript/packs/stylesheets/application.scss', BOOTSTRAP_CONFIG, force: true
+
 
 # Adding Localhost custom environment variables
 def localhost_secrets
@@ -71,12 +75,17 @@ def add_javascript
 end
 
 def config_bootstrap_jquery
-  content = <<-BTSP
+  content = <<-APPJS
+    require("@rails/ujs").start()
+    require("turbolinks").start()
+    require("@rails/activestorage").start()
+    require("channels")    
+    
     import 'bootstrap';
     import './stylesheets/application.scss';
     global.$ = jQuery;
-  BTSP
-  insert_into_file 'app/javascript/packs/application.js', content + "\n", after: 'require("channels")'
+  APPJS
+  create_file 'app/javascript/packs/application.js', content, force: true
 end
 
 # Custom files
@@ -99,10 +108,20 @@ after_bundle do
   # Adding all the custom files
   copy_templates
 
+  # Prepare DEVISE Gem
+  generate 'devise:install'
+  generate 'devise User'
+  generate 'devise:views:bootstrap_templates'
+
   # Initial config of RSpec
   generate 'rspec:install'
+
   # Config Guard
   run 'bundle exec guard init'
+
+  # Migrate
+  rails_command 'db:create'
+  rails_command 'db:migrate'
 
   # Fix default rubocop errors
   run 'bundle exec rubocop -a'
@@ -112,5 +131,8 @@ after_bundle do
   git add: '.'
   git commit: %Q(-m "Initial commit")
 
+  run 'clear'
   say 'Applicacion creada con éxito!', :green
+  say "Cambie de directorio con: "
+  say "$ cd #{app_name}", :yellow
 end

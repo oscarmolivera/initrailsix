@@ -15,7 +15,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Flexible authentication solution for Rails with Warden.
 gem 'devise', '~> 4.7', '>= 4.7.1'
 # Bootstrap views for Devise with I18n support.
-gem 'devise-bootstrap-views', '~> 1.0'
+gem 'devise-bootstrap-views', '~> 1.1'
 # Slugging and permalink plugins for Active Record.
 gem 'friendly_id', '~> 5.3'
 # HTML Abstraction Markup Language.
@@ -42,14 +42,20 @@ gem 'will_paginate', '~> 3.3'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console.
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
-  # Easily generate fake data: names, addresses, phone numbers, etc.
-  gem 'faker', '~> 2.11'
+  # A testing framework for Rails 5+.
+  gem 'rspec-core'
+  gem 'rspec-expectations'
+  gem 'rspec-mocks'
+  gem 'rspec-rails'
+  gem 'rspec-support'
 end
 
 group :development do
   # Guard and LiveReload automatically reloads your browser when 'view' files are modified.
   gem 'guard'
   gem 'guard-livereload', '~> 2.5', require: false
+  # Guard::RSpec allows to automatically & intelligently launch specs when files are modified.
+  gem 'guard-rspec', require: false
   # Listens to file modifications and notifies you about the changes.
   gem 'listen', '>= 3.0.5', '< 3.2'
   # A simple, fast Mysql library for Ruby, binding to libmysql.
@@ -69,10 +75,14 @@ group :test do
   gem 'capybara', '>= 2.15'
   # Ensureing a clean slate of databases for testing.
   gem 'database_cleaner'
+  # Integration between factory_bot and rails
+  gem 'factory_bot_rails'
+  # Easily generate fake data: names, addresses, phone numbers, etc.
+  gem 'faker', '~> 2.11'
   # A tool for writing automated tests of websites.
   gem 'selenium-webdriver'
-  # A testing framework for Rails 5+.
-  gem 'rspec-rails', '~> 4.0'
+  # Simple One-Liner Tests for Rails
+  gem 'shoulda-matchers', '~> 4.3'
   # Use sqlite3 as the database for testing.
   gem 'sqlite3', '~> 1.4'
   # Easy installation and use of web drivers to run system tests with browsers.
