@@ -62,6 +62,7 @@ AllCops:
   Exclude:
     - 'node_modules/**/*'
     - 'bin/**/*'
+    - 'spec/**/*.rb'
     - 'tmp/**/*'
     - 'vendor/**/*'
     - '.git/**/*'

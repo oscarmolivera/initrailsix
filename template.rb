@@ -24,20 +24,22 @@ create_file 'config/secrets.rb', SECRETS_RB_FILE, force: true
 
 # The Database YML FILE
 DB_CONFIG = <<-HEREDOC.strip_heredoc
+  default: &default
+  adapter: mysql2
+  encoding: utf8
+  pool: 5
+  host: localhost
+  username: <%= ENV['DATABASE_USERNAME'] %> 
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  socket: <%= ENV['SOCKET'] %>
+
   development:
-    adapter: mysql2
-    encoding: utf8
-    pool: 5
-    host: localhost
-    database: #{app_name}_development
-    username: <%= ENV['DATABASE_USERNAME'] %> 
-    password: <%= ENV['DATABASE_PASSWORD'] %>
-    socket: <%= ENV['SOCKET'] %>
+  <<: *default
+  database: #{app_name}_development
+
   test:
-    adapter: sqlite3
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-    timeout: 5000
-    database: db/#{app_name}_test.sqlite3  
+  <<: *default
+  database: #{app_name}_test 
 HEREDOC
 create_file 'config/database.yml', DB_CONFIG, force: true
 
