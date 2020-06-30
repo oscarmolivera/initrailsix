@@ -13,8 +13,8 @@ end
 # Start with my own Gemfile
 remove_file 'Gemfile'
 copy_file 'Gemfile', 'Gemfile'
-db_user = IO::console.getpass '** Ingrese el usuario admin de su base de datos: '
-db_password = IO::console.getpass ' ** Ingrese contraseña del usuario : '
+db_user = IO::console.getpass '** Database AdminUser Name? : '
+db_password = IO::console.getpass ' ** Database AdminUser Password? : '
 SECRETS_RB_FILE = <<-HEREDOC.strip_heredoc
   ENV['DATABASE_USERNAME'] = "#{db_user}"
   ENV['DATABASE_PASSWORD'] = "#{db_password}"
@@ -47,7 +47,6 @@ BOOTSTRAP_CONFIG = <<-HEREDOC.strip_heredoc
     @import '~bootstrap/scss/bootstrap';
 HEREDOC
 create_file 'app/javascript/packs/stylesheets/application.scss', BOOTSTRAP_CONFIG, force: true
-
 
 # Adding Localhost custom environment variables
 def localhost_secrets
@@ -134,7 +133,7 @@ after_bundle do
   git commit: %Q(-m "Initial commit")
 
   run 'clear'
-  say 'Applicacion creada con éxito!', :green
-  say "Cambie de directorio con: "
+  say 'Houston: You are good to go!', :green
+  say "Get Inside with: "
   say "$ cd #{app_name}", :yellow
 end
