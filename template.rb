@@ -24,22 +24,27 @@ create_file 'config/secrets.rb', SECRETS_RB_FILE, force: true
 
 # The Database YML FILE
 DB_CONFIG = <<-HEREDOC.strip_heredoc
-  default: &default
-  adapter: mysql2
-  encoding: utf8
-  pool: 5
-  host: localhost
-  username: <%= ENV['DATABASE_USERNAME'] %> 
-  password: <%= ENV['DATABASE_PASSWORD'] %>
-  socket: <%= ENV['SOCKET'] %>
-
   development:
-  <<: *default
-  database: #{app_name}_development
+    adapter: mysql2
+    encoding: utf8
+    pool: 5
+    host: localhost
+    database: #{app_name}_development
+    username: <%= ENV['DATABASE_USERNAME'] %> 
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    socket: <%= ENV['SOCKET'] %>
+  
 
   test:
-  <<: *default
-  database: #{app_name}_test 
+    adapter: mysql2
+    encoding: utf8
+    pool: 5
+    host: localhost
+    database: #{app_name}_test
+    username: <%= ENV['DATABASE_USERNAME'] %> 
+    password: <%= ENV['DATABASE_PASSWORD'] %>
+    socket: <%= ENV['SOCKET'] %>
+  
 HEREDOC
 create_file 'config/database.yml', DB_CONFIG, force: true
 
@@ -95,6 +100,7 @@ def copy_templates
   remove_file '.gitignore'
   copy_file '.gitignore', '.gitignore'
   copy_file '.rubocop.yml', '.rubocop.yml'
+  copy_file 'Procfile', 'Procfile'
   directory 'app', force: true
 end
 
@@ -120,6 +126,12 @@ after_bundle do
   # Config Guard
   run 'bundle exec guard init'
 
+  # ERB_2_HAML Files
+  rails_command 'haml:erb2haml'
+  
+  # SimpleForm install
+  rails_command 'generate simple_form:install'
+
   # Migrate
   rails_command 'db:create'
   rails_command 'db:migrate'
@@ -128,9 +140,9 @@ after_bundle do
   run 'bundle exec rubocop -a'
 
   # Commit everything to git
-  git :init
-  git add: '.'
-  git commit: %Q(-m "Initial commit")
+  #git :init
+  #git add: '.'
+  #git commit: %Q(-m "Initial commit")
 
   run 'clear'
   say 'Houston: You are good to go!', :green
