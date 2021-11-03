@@ -144,13 +144,11 @@ after_bundle do
   rails_command 'db:create'
   rails_command 'db:migrate'
 
-  # Fix default rubocop errors
-  run 'bundle exec rubocop -a'
 
   # Commit everything to git
-  #git :init
-  #git add: '.'
-  #git commit: %Q(-m "Initial commit")
+  git :init
+  git add: '.'
+  git commit: %Q(-m "Initial commit")
 
   run 'clear'
   say 'Houston: You are good to go!', :green
