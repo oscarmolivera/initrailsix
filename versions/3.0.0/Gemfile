@@ -80,7 +80,7 @@ group :development do
   # A simple, fast Mysql library for Ruby, binding to libmysql.
   gem 'mysql2', '~> 0.5.3'
   # Automatic Ruby code style checking tool.
-  gem 'rubocop', '~> 0.82.0', require: false
+  gem 'rubocop', '~> 1.22.0', require: false
   gem 'rubocop-performance', require: false
   # Spring speeds up development by keeping your application running in the background.
   gem 'spring'
