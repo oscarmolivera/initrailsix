@@ -58,11 +58,17 @@ create_file 'app/javascript/packs/stylesheets/application.scss', BOOTSTRAP_CONFI
 def localhost_secrets
   content = <<-ENV_CONFIG
   
+  # Load the Rails application.
+  require_relative "application"
+
   # Load the app's custom environment variables here, so that they are loaded before environments/*.rb
   app_environment_variables = File.join(Rails.root, 'config', 'secrets.rb')
   load(app_environment_variables) if File.exist?(app_environment_variables)
+
+  # Initialize the Rails application.
+  Rails.application.initialize!
   ENV_CONFIG
-  insert_into_file 'config/environment.rb', content + "\n", after: "require_relative 'application'"
+  create_file 'config/environment.rb', content, force: true
 end
 
 # JQuery-Bootstrap-Popper method
@@ -107,6 +113,7 @@ end
 
 after_bundle do
   # Custom local environment variables
+  remove_file 'config/environment.rb'
   localhost_secrets
 
   # Applying styling frameworks Jquery/bootstrap
